@@ -61,8 +61,10 @@ def compute_slope(baseline: float, last: float, hours: float = 24.0) -> float:
 
 # ======================================
 # 2) Preset profiles (Low / Moderate / High)
+#    + Patient ID لكل حالة
 # ======================================
 LOW_PRESET = {
+    "patient_id": "P-LOW-001",
     "age": 25,
     "sex": "Male",
     "baseline_crp": 0.5,
@@ -86,6 +88,7 @@ LOW_PRESET = {
 }
 
 MODERATE_PRESET = {
+    "patient_id": "P-MED-001",
     "age": 35,
     "sex": "Male",
     "baseline_crp": 1.2,
@@ -109,6 +112,7 @@ MODERATE_PRESET = {
 }
 
 HIGH_PRESET = {
+    "patient_id": "P-HIGH-001",
     "age": 55,
     "sex": "Male",
     "baseline_crp": 8.0,
@@ -144,6 +148,9 @@ def init_session_defaults():
     if "age" not in st.session_state:
         for k, v in LOW_PRESET.items():
             st.session_state[k] = v
+    # تأكد أن patient_id موجود
+    if "patient_id" not in st.session_state:
+        st.session_state["patient_id"] = LOW_PRESET["patient_id"]
 
 
 # ======================================
@@ -178,7 +185,7 @@ def main():
             max-width: 1200px;
         }
 
-        /* Sidebar: زودنا padding عشان الأشياء ما تكون ملزقة في الطرف */
+        /* Sidebar */
         section[data-testid="stSidebar"] {
             background: #060815;
             border-right: 1px solid #15182b;
@@ -236,12 +243,13 @@ def main():
             border-color: #5c6cff;
         }
 
-        /* Sidebar preset buttons */
+        /* Sidebar preset buttons: وسط + عرض 80% */
         section[data-testid="stSidebar"] .stButton>button {
             white-space: nowrap;
-            width: 100%;
-            height: 42px;
+            width: 80%;
+            height: 40px;
             font-size: 15px;
+            margin: 0.2rem auto;
         }
 
         /* Risk card */
@@ -321,7 +329,6 @@ def main():
         )
 
     with header_col2:
-        # الشعار في الزاوية يمين فوق
         st.image("manaaty_logo.png", width=90)
 
     st.markdown("---")
@@ -333,10 +340,27 @@ def main():
     # ======================================
     # Sidebar controls
     # ======================================
-    st.sidebar.title("🩺 Manaaty Controls")
-    st.sidebar.caption("Use presets or adjust inputs to explore different immune activation patterns.")
 
-    st.sidebar.subheader("Quick Presets")
+    # عنوان Manaaty Controls + الوصف في المنتصف
+    st.sidebar.markdown(
+        """
+        <div style="text-align:center; margin-bottom:1.2rem;">
+            <div style="font-size:22px; font-weight:700; color:#f5f6ff;">
+                Manaaty Controls
+            </div>
+            <div style="font-size:14px; color:#d4ccb7; margin-top:0.4rem;">
+                Use presets or adjust inputs to explore different immune activation patterns.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.sidebar.markdown(
+        "<div style='text-align:center; font-weight:600; margin-bottom:0.4rem;'>Quick Presets</div>",
+        unsafe_allow_html=True,
+    )
+
     c1, c2, c3 = st.sidebar.columns(3)
     with c1:
         if st.button("Low", key="preset_low"):
@@ -351,7 +375,9 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.subheader("Patient Information")
 
-    patient_id = st.sidebar.text_input("Patient ID", value="P-001")
+    # patient_id مربوط بـ session_state عشان يتغير مع الـ preset
+    patient_id = st.sidebar.text_input("Patient ID", key="patient_id")
+
     age = st.sidebar.number_input(
         "Age (years)", min_value=0, max_value=110, value=int(st.session_state["age"])
     )
