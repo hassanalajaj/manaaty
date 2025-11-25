@@ -3,7 +3,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
-
 # ======================================
 # 1) Model loading
 # ======================================
@@ -11,7 +10,6 @@ from sklearn.ensemble import RandomForestClassifier
 def load_model():
     data_path = "vaxpatch_synthetic_timeseries_1850.csv"
     df = pd.read_csv(data_path)
-
 
     feature_cols = [
         "age",
@@ -35,15 +33,12 @@ def load_model():
         "activity_slope_0_24",
     ]
 
-
     X = df[feature_cols]
     y = df["early_risk_class"]
-
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
-
 
     model = RandomForestClassifier(
         n_estimators=300,
@@ -53,10 +48,7 @@ def load_model():
     )
     model.fit(X_train, y_train)
 
-
     return model
-
-
 
 
 def compute_slope(baseline: float, last: float, hours: float = 24.0) -> float:
@@ -65,8 +57,6 @@ def compute_slope(baseline: float, last: float, hours: float = 24.0) -> float:
         return (float(last) - float(baseline)) / float(hours)
     except Exception:
         return 0.0
-
-
 
 
 # ======================================
@@ -95,7 +85,6 @@ LOW_PRESET = {
     "last_activity": 0.6,
 }
 
-
 MODERATE_PRESET = {
     "age": 35,
     "sex": "Male",
@@ -118,7 +107,6 @@ MODERATE_PRESET = {
     "baseline_activity": 0.6,
     "last_activity": 0.5,
 }
-
 
 HIGH_PRESET = {
     "age": 55,
@@ -144,8 +132,6 @@ HIGH_PRESET = {
 }
 
 
-
-
 def apply_preset(preset: dict):
     """Store preset in session_state then rerun."""
     for k, v in preset.items():
@@ -153,15 +139,11 @@ def apply_preset(preset: dict):
     st.rerun()
 
 
-
-
 def init_session_defaults():
     """Initialize session_state with normal-ish defaults if not set."""
     if "age" not in st.session_state:
         for k, v in LOW_PRESET.items():
             st.session_state[k] = v
-
-
 
 
 # ======================================
@@ -174,16 +156,14 @@ def main():
         page_icon="🧬",
     )
 
-
     init_session_defaults()
 
-
-    # ---------- Global Dark Neon CSS + bigger fonts ----------
+    # ---------- Global CSS ----------
     st.markdown(
         """
         <style>
         html, body {
-            font-size: 17px;              /* تكبير بسيط للخط الأساسي */
+            font-size: 17px;
         }
         body {
             background-color: #050713;
@@ -198,6 +178,16 @@ def main():
             max-width: 1200px;
         }
 
+        /* Sidebar: زودنا padding عشان الأشياء ما تكون ملزقة في الطرف */
+        section[data-testid="stSidebar"] {
+            background: #060815;
+            border-right: 1px solid #15182b;
+            font-size: 16px;
+        }
+        section[data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+            padding-left: 1.4rem;
+            padding-right: 1.4rem;
+        }
 
         /* Generic card */
         .m-card {
@@ -209,7 +199,6 @@ def main():
             margin-bottom: 18px;
         }
 
-
         .m-title {
             font-size: 21px;
             font-weight: 600;
@@ -217,24 +206,10 @@ def main():
             margin-bottom: 12px;
         }
 
-
         h1 {
-            font-size: 32px;
-        }
-
-
-        h2, h3, h4 {
+            font-size: 30px;
             color: #f5f6ff;
         }
-
-
-        /* Sidebar */
-        section[data-testid="stSidebar"] {
-            background: #060815;
-            border-right: 1px solid #15182b;
-            font-size: 16px;
-        }
-
 
         /* Inputs label */
         .stNumberInput label, .stTextInput label, .stSelectbox label {
@@ -242,15 +217,11 @@ def main():
             font-weight: 500 !important;
             font-size: 16px !important;
         }
-
-
-        /* Input text */
         .stNumberInput input, .stTextInput input {
             font-size: 16px !important;
         }
 
-
-        /* Generic button (main area) */
+        /* Buttons */
         .stButton>button {
             border-radius: 999px;
             padding: 10px 22px;
@@ -265,7 +236,6 @@ def main():
             border-color: #5c6cff;
         }
 
-
         /* Sidebar preset buttons */
         section[data-testid="stSidebar"] .stButton>button {
             white-space: nowrap;
@@ -274,7 +244,6 @@ def main():
             font-size: 15px;
         }
 
-
         /* Risk card */
         .risk-card {
             border-radius: 16px;
@@ -282,8 +251,6 @@ def main():
             margin-top: 8px;
             font-size: 16px;
         }
-
-
         .risk-low {
             background: rgba(46, 204, 113, 0.12);
             border: 1px solid rgba(46, 204, 113, 0.4);
@@ -299,7 +266,6 @@ def main():
             border: 1px solid rgba(231, 76, 60, 0.6);
             color: #ff6b6b;
         }
-
 
         /* Vital pill row */
         .vital-pill {
@@ -326,61 +292,49 @@ def main():
             font-weight: 600;
         }
 
-
         .subsection-title {
             font-size: 16px;
             font-weight: 600;
             color: #9fa9ff;
             margin: 12px 0 6px 0;
         }
-
-
         </style>
         """,
         unsafe_allow_html=True,
     )
 
+    # ---------- Header (text يسار – logo يمين) ----------
+    header_col1, header_col2 = st.columns([4, 1])
 
-    # ---------- Header + Logo ----------
-    header_col1, header_col2 = st.columns([3, 1])
     with header_col1:
-        inner_logo_col, inner_text_col = st.columns([1, 4])
-        with inner_logo_col:
-            # تأكد أن الملف موجود باسم manaaty_logo.png
-            st.image("manaaty_logo.png", width=80)
-        with inner_text_col:
-            st.markdown(
-                """
-                <h1 style="margin-bottom:6px;">Early Immune Activation Dashboard</h1>
-                <p style="margin-top:0; margin-bottom:6px; color:#d0dcff; font-weight:600; font-size:17px;">
-                    Clinical Prototype – Manaaty
-                </p>
-                <p style="color:#9ca3c7; font-size:15px; margin-top:0;">
-                    AI-assisted risk stratification using patch-based vitals and inflammatory biomarkers.
-                </p>
-                """,
-                unsafe_allow_html=True,
-            )
-    with header_col2:
-        st.empty()
+        st.markdown(
+            """
+            <h1 style="margin-bottom:8px;">Early Immune Activation Dashboard</h1>
+            <p style="margin-top:0; margin-bottom:6px; color:#d0dcff; font-weight:600; font-size:17px;">
+                Clinical Prototype – Manaaty
+            </p>
+            <p style="color:#9ca3c7; font-size:15px; margin-top:0;">
+                AI-assisted risk stratification using patch-based vitals and inflammatory biomarkers.
+            </p>
+            """,
+            unsafe_allow_html=True,
+        )
 
+    with header_col2:
+        # الشعار في الزاوية يمين فوق
+        st.image("manaaty_logo.png", width=90)
 
     st.markdown("---")
-
 
     # ---------- Load model ----------
     with st.spinner("Loading Manaaty AI model..."):
         model = load_model()
 
-
     # ======================================
     # Sidebar controls
     # ======================================
     st.sidebar.title("🩺 Manaaty Controls")
-
-
     st.sidebar.caption("Use presets or adjust inputs to explore different immune activation patterns.")
-
 
     st.sidebar.subheader("Quick Presets")
     c1, c2, c3 = st.sidebar.columns(3)
@@ -394,10 +348,8 @@ def main():
         if st.button("High", key="preset_high"):
             apply_preset(HIGH_PRESET)
 
-
     st.sidebar.markdown("---")
     st.sidebar.subheader("Patient Information")
-
 
     patient_id = st.sidebar.text_input("Patient ID", value="P-001")
     age = st.sidebar.number_input(
@@ -411,10 +363,8 @@ def main():
         else 0,
     )
 
-
     st.sidebar.markdown("---")
     st.sidebar.subheader("Inflammatory Biomarkers")
-
 
     baseline_crp = st.sidebar.number_input(
         "CRP (mg/L)", 0.0, 300.0, float(st.session_state["baseline_crp"])
@@ -426,10 +376,8 @@ def main():
         "TNF-α (pg/mL)", 0.0, 500.0, float(st.session_state["baseline_tnf"])
     )
 
-
     st.sidebar.markdown("---")
     st.sidebar.subheader("Patch Vitals (0–24h)")
-
 
     baseline_temp = st.sidebar.number_input(
         "Baseline Temperature (°C)", 34.0, 42.0, float(st.session_state["baseline_temp"]), step=0.1
@@ -438,14 +386,12 @@ def main():
         "Temperature at 24h (°C)", 34.0, 42.0, float(st.session_state["last_temp"]), step=0.1
     )
 
-
     baseline_hr = st.sidebar.number_input(
         "Baseline Heart Rate (bpm)", 30, 200, int(st.session_state["baseline_hr"])
     )
     last_hr = st.sidebar.number_input(
         "Heart Rate at 24h (bpm)", 30, 200, int(st.session_state["last_hr"])
     )
-
 
     baseline_rr = st.sidebar.number_input(
         "Baseline Respiratory Rate (breaths/min)", 5, 60, int(st.session_state["baseline_rr"])
@@ -454,14 +400,12 @@ def main():
         "Respiratory Rate at 24h (breaths/min)", 5, 60, int(st.session_state["last_rr"])
     )
 
-
     baseline_spo2 = st.sidebar.number_input(
         "Baseline SpO₂ (%)", 70.0, 100.0, float(st.session_state["baseline_spo2"]), step=0.1
     )
     last_spo2 = st.sidebar.number_input(
         "SpO₂ at 24h (%)", 70.0, 100.0, float(st.session_state["last_spo2"]), step=0.1
     )
-
 
     baseline_hrv = st.sidebar.number_input(
         "Baseline HRV (RMSSD ms)", 5.0, 200.0, float(st.session_state["baseline_hrv"]), step=1.0
@@ -470,14 +414,12 @@ def main():
         "HRV at 24h (RMSSD ms)", 5.0, 200.0, float(st.session_state["last_hrv"]), step=1.0
     )
 
-
     baseline_activity = st.sidebar.number_input(
         "Baseline Activity Index (0–1)", 0.0, 1.0, float(st.session_state["baseline_activity"]), step=0.05
     )
     last_activity = st.sidebar.number_input(
         "Activity Index at 24h (0–1)", 0.0, 1.0, float(st.session_state["last_activity"]), step=0.05
     )
-
 
     # Update session_state
     st.session_state["age"] = age
@@ -498,20 +440,16 @@ def main():
     st.session_state["baseline_activity"] = baseline_activity
     st.session_state["last_activity"] = last_activity
 
-
     # ======================================
     # Main layout
     # ======================================
     left_col, right_col = st.columns([1.05, 1.7])
-
 
     # ------- Left: Input Data Summary -------
     with left_col:
         st.markdown('<div class="m-card">', unsafe_allow_html=True)
         st.markdown('<div class="m-title">Input Data</div>', unsafe_allow_html=True)
 
-
-        # Vitals
         st.markdown('<div class="subsection-title">Vitals</div>', unsafe_allow_html=True)
         st.markdown(
             f"""
@@ -535,8 +473,6 @@ def main():
             unsafe_allow_html=True,
         )
 
-
-        # Biomarkers
         st.markdown('<div class="subsection-title">Inflammatory Biomarkers</div>', unsafe_allow_html=True)
         st.markdown(
             f"""
@@ -556,8 +492,6 @@ def main():
             unsafe_allow_html=True,
         )
 
-
-        # Patient summary
         st.markdown('<div class="subsection-title">Patient Summary</div>', unsafe_allow_html=True)
         st.markdown(
             f"""
@@ -569,23 +503,14 @@ def main():
             unsafe_allow_html=True,
         )
 
-
         st.markdown("</div>", unsafe_allow_html=True)
 
-
-    # ------- Right: Risk card + Trend -------
+    # ------- Right: Risk + Trend -------
     with right_col:
-        # === Assessment Card ===
         st.markdown('<div class="m-card">', unsafe_allow_html=True)
         st.markdown('<div class="m-title">Early Immune Activation Risk</div>', unsafe_allow_html=True)
 
-
         run_button = st.button("Run Assessment", use_container_width=True)
-
-
-        pred_class = None
-        pred_proba = None
-
 
         if run_button:
             temp_slope = compute_slope(baseline_temp, last_temp)
@@ -595,11 +520,9 @@ def main():
             rr_slope = compute_slope(baseline_rr, last_rr)
             activity_slope = compute_slope(baseline_activity, last_activity)
 
-
             ferritin_val = st.session_state.get("baseline_ferritin", 150.0)
             lymph_val = st.session_state.get("baseline_lymph_pct", 30.0)
             neutro_val = st.session_state.get("baseline_neutro_pct", 60.0)
-
 
             input_row = pd.DataFrame(
                 [
@@ -627,15 +550,13 @@ def main():
                 ]
             )
 
-
+            model = load_model()
             pred_class = int(model.predict(input_row)[0])
             pred_proba = model.predict_proba(input_row)[0]
-
 
             risk_labels = {0: "Low", 1: "Moderate", 2: "High"}
             risk_classes = {0: "risk-low", 1: "risk-mod", 2: "risk-high"}
             risk_icons = {0: "✅", 1: "⚠️", 2: "🚨"}
-
 
             interpretations = {
                 0: "Signal consistent with **low early immune activation**. Continue routine monitoring.",
@@ -643,12 +564,10 @@ def main():
                 2: "Strong signal of **high early immune activation**. Prioritize clinical review and action.",
             }
 
-
-            r_label = risk_labels.get(pred_class, "Unknown")
-            r_css = risk_classes.get(pred_class, "risk-low")
-            r_icon = risk_icons.get(pred_class, "ℹ️")
-            r_text = interpretations.get(pred_class, "")
-
+            r_label = risk_labels[pred_class]
+            r_css = risk_classes[pred_class]
+            r_icon = risk_icons[pred_class]
+            r_text = interpretations[pred_class]
 
             st.markdown(
                 f"""
@@ -667,34 +586,26 @@ def main():
                 unsafe_allow_html=True,
             )
 
-
-            # Probability distribution
             st.markdown("**Class Probabilities (Low / Moderate / High)**")
             labels = ["Low", "Moderate", "High"]
             for i, label in enumerate(labels):
                 p = float(pred_proba[i])
                 st.write(f"{label}: **{p:.2f}**")
                 st.progress(int(p * 100))
-
-
         else:
             st.caption("Click **Run Assessment** to generate risk level and probabilities.")
 
-
         st.markdown("</div>", unsafe_allow_html=True)
 
-
-        # === Trend Analysis Card ===
+        # Trend Analysis
         st.markdown('<div class="m-card">', unsafe_allow_html=True)
         st.markdown('<div class="m-title">Trend Analysis (0–24 hours)</div>', unsafe_allow_html=True)
-
 
         hours = [0, 12, 24]
         temp_trend = [baseline_temp, (baseline_temp + last_temp) / 2, last_temp]
         hr_trend = [baseline_hr, (baseline_hr + last_hr) / 2, last_hr]
         rr_trend = [baseline_rr, (baseline_rr + last_rr) / 2, last_rr]
         crp_trend = [baseline_crp * 0.7, baseline_crp * 0.9, baseline_crp]
-
 
         trend_df = pd.DataFrame(
             {
@@ -706,9 +617,7 @@ def main():
             index=hours,
         )
 
-
         st.line_chart(trend_df)
-
 
         st.markdown(
             f"""
@@ -721,12 +630,8 @@ def main():
             unsafe_allow_html=True,
         )
 
-
         st.markdown("</div>", unsafe_allow_html=True)
-
-
 
 
 if __name__ == "__main__":
     main()
-
