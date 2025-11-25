@@ -193,18 +193,6 @@ def main():
             margin-bottom: 10px;
         }
 
-        /* Badge */
-        .manaaty-badge {
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 11px;
-            background: rgba(88, 101, 242, 0.16);
-            border: 1px solid rgba(88, 101, 242, 0.5);
-            color: #c7d2ff;
-            display: inline-block;
-            margin-bottom: 6px;
-        }
-
         h1, h2, h3, h4 {
             color: #f5f6ff;
         }
@@ -236,7 +224,7 @@ def main():
             border-color: #5c6cff;
         }
 
-        /* Sidebar preset buttons: prevent word wrapping + full width */
+        /* Sidebar preset buttons: prevent wrapping + full width */
         section[data-testid="stSidebar"] .stButton>button {
             white-space: nowrap;
             width: 100%;
@@ -305,23 +293,23 @@ def main():
     )
 
     # ---------- Header ----------
-    header_col1, header_col2 = st.columns([2, 2])
+    header_col1, header_col2 = st.columns([3, 1])
     with header_col1:
-        st.markdown('<div class="manaaty-badge">Clinical Prototype – Manaaty</div>', unsafe_allow_html=True)
         st.markdown(
             """
-            <h1 style="margin-bottom:4px;">Early Immune Activation Dashboard</h1>
-            <p style="color:#9ca3c7; font-size:14px; margin-top:2px;">
+            <h1 style="margin-bottom:6px;">Early Immune Activation Dashboard</h1>
+            <p style="margin-top:0; margin-bottom:4px; color:#d0dcff; font-weight:600;">
+                Clinical Prototype – Manaaty
+            </p>
+            <p style="color:#9ca3c7; font-size:14px; margin-top:0;">
                 AI-assisted risk stratification using patch-based vitals and inflammatory biomarkers.
             </p>
             """,
             unsafe_allow_html=True,
         )
+    # العمود الثاني فاضي الآن (كان فيه st.info قبل)
     with header_col2:
-        st.info(
-            "🧪 **Demo only:** Simulation interface for research & hackathon use. "
-            "Not intended for real-world clinical decision-making."
-        )
+        st.empty()
 
     st.markdown("---")
 
