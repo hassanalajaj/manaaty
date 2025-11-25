@@ -86,27 +86,34 @@ LOW_PRESET = {
     "last_activity": 0.6,
 }
 
+# 🔁 Medium معدّل بحيث يعطي Moderate (قيم أخف)
 MODERATE_PRESET = {
-    "age": 40,
+    "age": 35,
     "sex": "Male",
-    "baseline_crp": 2.0,
-    "baseline_il6": 1.0,
-    "baseline_tnf": 3.0,
-    "baseline_ferritin": 110.0,
-    "baseline_lymph_pct": 28.0,
-    "baseline_neutro_pct": 60.0,
+    "baseline_crp": 1.2,
+    "baseline_il6": 0.8,
+    "baseline_tnf": 2.0,
+    "baseline_ferritin": 100.0,
+    "baseline_lymph_pct": 30.0,
+    "baseline_neutro_pct": 58.0,
+
     "baseline_temp": 36.8,
-    "last_temp": 37.2,
+    "last_temp": 37.0,
+
     "baseline_hr": 72,
-    "last_hr": 82,
+    "last_hr": 76,
+
     "baseline_rr": 14,
-    "last_rr": 18,
+    "last_rr": 16,
+
     "baseline_spo2": 98.0,
-    "last_spo2": 96.0,
+    "last_spo2": 97.0,
+
     "baseline_hrv": 60.0,
-    "last_hrv": 45.0,
+    "last_hrv": 50.0,
+
     "baseline_activity": 0.6,
-    "last_activity": 0.4,
+    "last_activity": 0.5,
 }
 
 HIGH_PRESET = {
