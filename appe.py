@@ -221,9 +221,8 @@ def main():
             font-weight: 500 !important;
         }
 
-        /* Button */
+        /* Generic button (main area) */
         .stButton>button {
-            width: 100%;
             border-radius: 999px;
             padding: 10px 16px;
             font-size: 16px;
@@ -235,6 +234,14 @@ def main():
         .stButton>button:hover {
             background: linear-gradient(135deg, #3b4270, #20233a);
             border-color: #5c6cff;
+        }
+
+        /* Sidebar preset buttons: prevent word wrapping + full width */
+        section[data-testid="stSidebar"] .stButton>button {
+            white-space: nowrap;
+            width: 100%;
+            height: 40px;
+            font-size: 14px;
         }
 
         /* Risk card */
@@ -335,7 +342,7 @@ def main():
         if st.button("Low", key="preset_low"):
             apply_preset(LOW_PRESET)
     with c2:
-        if st.button("Medium", key="preset_med"):
+        if st.button("Med", key="preset_med"):
             apply_preset(MODERATE_PRESET)
     with c3:
         if st.button("High", key="preset_high"):
@@ -367,15 +374,6 @@ def main():
     )
     baseline_tnf = st.sidebar.number_input(
         "TNF-α (pg/mL)", 0.0, 500.0, float(st.session_state["baseline_tnf"])
-    )
-    baseline_ferritin = st.sidebar.number_input(
-        "Ferritin (ng/mL)", 0.0, 2000.0, float(st.session_state["baseline_ferritin"])
-    )
-    baseline_lymph_pct = st.sidebar.number_input(
-        "Lymphocyte %", 0.0, 100.0, float(st.session_state["baseline_lymph_pct"])
-    )
-    baseline_neutro_pct = st.sidebar.number_input(
-        "Neutrophil %", 0.0, 100.0, float(st.session_state["baseline_neutro_pct"])
     )
 
     st.sidebar.markdown("---")
@@ -423,15 +421,12 @@ def main():
         "Activity Index at 24h (0–1)", 0.0, 1.0, float(st.session_state["last_activity"]), step=0.05
     )
 
-    # Update session_state
+    # Update session_state (بدون الثلاثة اللي الدكتور ما يبيها في الواجهة)
     st.session_state["age"] = age
     st.session_state["sex"] = sex
     st.session_state["baseline_crp"] = baseline_crp
     st.session_state["baseline_il6"] = baseline_il6
     st.session_state["baseline_tnf"] = baseline_tnf
-    st.session_state["baseline_ferritin"] = baseline_ferritin
-    st.session_state["baseline_lymph_pct"] = baseline_lymph_pct
-    st.session_state["baseline_neutro_pct"] = baseline_neutro_pct
     st.session_state["baseline_temp"] = baseline_temp
     st.session_state["last_temp"] = last_temp
     st.session_state["baseline_hr"] = baseline_hr
@@ -479,7 +474,7 @@ def main():
             unsafe_allow_html=True,
         )
 
-        # Biomarkers
+        # Biomarkers (بدون Ferritin / Lymph / Neutro)
         st.markdown('<div class="subsection-title">Inflammatory Biomarkers</div>', unsafe_allow_html=True)
         st.markdown(
             f"""
@@ -519,7 +514,7 @@ def main():
         st.markdown('<div class="m-card">', unsafe_allow_html=True)
         st.markdown('<div class="m-title">Early Immune Activation Risk</div>', unsafe_allow_html=True)
 
-        run_button = st.button("Run Assessment")
+        run_button = st.button("Run Assessment", use_container_width=True)
 
         pred_class = None
         pred_proba = None
@@ -531,6 +526,11 @@ def main():
             hrv_slope = compute_slope(baseline_hrv, last_hrv)
             rr_slope = compute_slope(baseline_rr, last_rr)
             activity_slope = compute_slope(baseline_activity, last_activity)
+
+            # قيم Ferritin / Lymph / Neutro من session_state فقط (مخفية عن الواجهة)
+            ferritin_val = st.session_state.get("baseline_ferritin", 150.0)
+            lymph_val = st.session_state.get("baseline_lymph_pct", 30.0)
+            neutro_val = st.session_state.get("baseline_neutro_pct", 60.0)
 
             input_row = pd.DataFrame(
                 [
@@ -545,9 +545,9 @@ def main():
                         "baseline_crp_mg_l": baseline_crp,
                         "baseline_il6_pg_ml": baseline_il6,
                         "baseline_tnf_alpha_pg_ml": baseline_tnf,
-                        "baseline_ferritin_ng_ml": baseline_ferritin,
-                        "baseline_lymph_pct": baseline_lymph_pct,
-                        "baseline_neutro_pct": baseline_neutro_pct,
+                        "baseline_ferritin_ng_ml": ferritin_val,
+                        "baseline_lymph_pct": lymph_val,
+                        "baseline_neutro_pct": neutro_val,
                         "temp_slope_0_24": temp_slope,
                         "hr_slope_0_24": hr_slope,
                         "spo2_slope_0_24": spo2_slope,
@@ -645,4 +645,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
